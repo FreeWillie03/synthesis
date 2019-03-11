@@ -78,22 +78,18 @@ let month a = match a with
 
 let toBinary a = //Create a function ​toBinary​ which converts a positive integer to a binary string.Throw an exception if a negative integer is supplied.
   let rec bin i =
-    match (a<>0) with
-   |true ->
-     match i=1 with
-     |true -> string 0
-     |_ -> bin (i/2) + match (i%2=0) with
-          |true -> string 0
-          |_ -> string 1
-   |_ -> string 0
-  match (a>=0) with 
-  |true -> bin a      
-  |_ -> failwith "cant be negitive"
+    match i with
+    | 0 | 1 -> string i
+    | _ ->
+        let bit = string (i % 2)
+        (bin (i / 2)) + bit
+  match (a>=0) with
+  |true -> bin a 
+  |_ -> failwith "num < 0 exception"
 
 
-let bizFuzz _ = //Create a function ​bizFuzz ​to accept an integer ​n​ and return the number of times anumber between 1 and ​n​ inclusive is divisible by 3, divisible by 5, and divisible byboth 3 and 5.
-   failwith "Not implemented" //[target: 10 lines]
-    
+let bizFuzz n = //Create a function ​bizFuzz ​to accept an integer ​n​ and return the number of times anumber between 1 and ​n​ inclusive is divisible by 3, divisible by 5, and divisible byboth 3 and 5.//[target: 10 lines]
+ failwith "not implemented"
 
 let monthDay _ _ = //Create a function ​monthDay​ which accepts an integer ​d​ and a year ​y​, and returns astring for the month that the day ​d​ falls within. 
    failwith "Not implemented" //The function must accept a range ofd​ from 1 to 365 if ​y​ isn’t a leap year, and must accept ​d​ between 1 and 366 if ​y​ is aleap year.
