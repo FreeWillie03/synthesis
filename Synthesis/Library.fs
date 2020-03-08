@@ -1,5 +1,8 @@
 ﻿module Synthesis
 
+open System.Security.Claims
+open System
+
 let abelar a =  //Create a function abelar to return true if the input is greater than 12, and less than 3097, and is a multiple of 12.
  ((a > 12) && (a < 3097)) && (a % 12 = 0) // [target: 1 line]
     
@@ -87,12 +90,85 @@ let toBinary a = //Create a function ​toBinary​ which converts a positive in
   |true -> bin a 
   |_ -> failwith "num < 0 exception"
 
+let divByThree currentValue =
+  ((currentValue%3)=0) 
+   
+
+let divByFive currentValue =
+    ((currentValue%5)=0)
+
+let divByBoth currentValue = 
+    ((divByThree currentValue)&&(divByFive currentValue))
 
 let bizFuzz n = //Create a function ​bizFuzz ​to accept an integer ​n​ and return the number of times anumber between 1 and ​n​ inclusive is divisible by 3, divisible by 5, and divisible byboth 3 and 5.//[target: 10 lines]
- failwith "not implemented"
+    let rec num x first second third =
+        match (x=0) with 
+        |true -> (first,second,third)
+        |_ -> match (divByThree x),(divByFive x),(divByBoth x) with
+                |false,false,false -> num (x-1) first second third
+                |true,false,false -> num (x-1) (first+1) second third
+                |true,true,false -> num (x-1) (first+1) (second+1) third
+                |true,true,true -> num (x-1) (first+1) (second+1) (third+1)
+                |false,true,false -> num (x-1) (first) (second+1) (third)
+                |false,false,true -> num (x-1) (first) (second) (third+1)
+                |_ -> failwith "You stuffed up somewhere."
+    match (n<0) with 
+    |true -> (0,0,0)
+    |_ -> num n 0 0 0
+ //failwith "not implemented"
 
-let monthDay _ _ = //Create a function ​monthDay​ which accepts an integer ​d​ and a year ​y​, and returns astring for the month that the day ​d​ falls within. 
-   failwith "Not implemented" //The function must accept a range ofd​ from 1 to 365 if ​y​ isn’t a leap year, and must accept ​d​ between 1 and 366 if ​y​ is aleap year.
+let checkDay day year =
+    match isLeap year with 
+    |true -> match (day<367) with 
+                |true -> false
+                |_ -> true
+    |_ -> match (day<366) with 
+            |true -> false
+            |_ -> true
+
+let getMonth day year = 
+    match (day>0)&&(day<=31) with 
+    |true ->"January"
+    |_ -> match isLeap year with 
+    //                             feb 29                 mar 30              april  30               may  31             june  30                july  31            aug 31                  sept  30            oct 31                 nov 30
+            |true -> match (32<=day && day <=60),(61<=day && day<=91),(92<=day && day<=121),(122<=day && day<=152),(153<=day && day<=183),(184<=day && day<=215),(216<=day && day<=247),(248<=day&& day<=277),(278<=day && day<=309),(310<=day && day<=335) with 
+                        |true,false,false,false,false,false,false,false,false,false -> "February"
+                        |false,true,false,false,false,false,false,false,false,false -> "March"
+                        |false,false,true,false,false,false,false,false,false,false -> "April"
+                        |false,false,false,true,false,false,false,false,false,false -> "May"
+                        |false,false,false,false,true,false,false,false,false,false -> "June"
+                        |false,false,false,false,false,true,false,false,false,false -> "July"
+                        |false,false,false,false,false,false,true,false,false,false -> "August"
+                        |false,false,false,false,false,false,false,true,false,false -> "September"
+                        |false,false,false,false,false,false,false,false,true,false -> "October"
+                        |false,false,false,false,false,false,false,false,false,true -> "November"
+                        |_ -> "December"
+                    //            Feb                     Mar                 April                   May                 June                         July           Aug           sept                    oct                     nov
+            |_ -> match  (32<=day && day<=59),(60<=day && day<=90),(91<=day && day<=121),(122<=day && day<152),(153<=day && day<=182),(183<=day && day<=213),(214<=day && day<=244),(245<=day&& day<=274),(275<=day && day<=305),(306<=day && day<=334) with 
+                        |true,false,false,false,false,false,false,false,false,false -> "February"
+                        |false,true,false,false,false,false,false,false,false,false -> "March"
+                        |false,false,true,false,false,false,false,false,false,false -> "April"
+                        |false,false,false,true,false,false,false,false,false,false -> "May"
+                        |false,false,false,false,true,false,false,false,false,false -> "June"
+                        |false,false,false,false,false,true,false,false,false,false -> "July"
+                        |false,false,false,false,false,false,true,false,false,false -> "August"
+                        |false,false,false,false,false,false,false,true,false,false -> "September"
+                        |false,false,false,false,false,false,false,false,true,false -> "October"
+                        |false,false,false,false,false,false,false,false,false,true -> "November"
+                        |_ -> "December"
+
+let monthDay day year = //Create a function ​monthDay​ which accepts an integer ​d​ and a year ​y​, and returns astring for the month that the day ​d​ falls within. 
+    match (day<=0) with
+    |true -> failwith "Can't have day 0"
+    |_ ->match (checkDay day year),(year<1582) with 
+          |false,true -> failwith "year is less then 1582"
+          |true,false -> failwith "day is 0 more then year"
+          |true,true -> failwith "Day is wrong and year"
+          |_ -> getMonth day year                                        //1 1582
+            
+
+   
+//The function must accept a range of from 1 to 365 if ​y​ isn’t a leap year, and must accept ​d​ between 1 and 366 if ​y​ is aleap year.
 //If ​d​ is out of range, or if ​y​ is less than 1582, then an exception must bethrown.  
 //Remember that:a.April, June, September, and November have 30 days.
 //b.January, March, May, July, August, October, and December have 31 days.
